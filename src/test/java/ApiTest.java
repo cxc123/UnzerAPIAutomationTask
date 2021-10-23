@@ -17,6 +17,7 @@ public class ApiTest {
     private static String userName;
     private static String userId;
     private static String password;
+    private static String sessionId;
     private final static Logger log = LogManager.getLogger(ApiTest.class.getName());
 
 
@@ -24,9 +25,8 @@ public class ApiTest {
     public void setUp()
     {
         log.info("-------Setting up for running api test---------");
-        baseUrl ="https://api.m3o.com/v1/user";
-        bearerToken="MTA2MzBlNjktZDI1Yy00MzNiLTkyMGQtNjNhNzU5YmM2NmE0";
-        Utility utility=new utils.Utility();
+        baseUrl =System.getProperty("TEST_BASE_URL","https://api.m3o.com/v1/user");
+        bearerToken=System.getProperty("BEARER_TOKEN","MTA2MzBlNjktZDI1Yy00MzNiLTkyMGQtNjNhNzU5YmM2NmE0");
         userId=Utility.generateUserId();
         userName=Utility.generateUsername(userId);
         emailId=Utility.generateEmail(userId);
@@ -46,6 +46,7 @@ public class ApiTest {
         String createUserBody= Utility.generatePayload(createUserAttribute);
         Response createUserResponse= RestClient.postRequestResponse(baseUrl,"/Create",bearerToken,createUserBody);
     }
+
     @Test(groups = {"createuser"})
     public void testCreateUserWithoutMandatoryFields()
     {
@@ -55,6 +56,7 @@ public class ApiTest {
         String createUserBody= Utility.generatePayload(createUserAttribute);
         Response createUserResponse= RestClient.postRequestResponse(baseUrl,"/Create",bearerToken,createUserBody);
     }
+
     @Test(groups = {"getuser"},dependsOnMethods = {"testCreateUserWithMandatoryFields"})
     public void testExistGetUser()
     {
@@ -64,6 +66,7 @@ public class ApiTest {
         String getUserBody= Utility.generatePayload(getUserAttribute);
         Response createUserResponse= RestClient.postRequestResponse(baseUrl,"/Read",bearerToken,getUserBody);
     }
+
     @Test(groups = {"getuser"})
     public void testNotExistGetUser()
     {
@@ -72,5 +75,38 @@ public class ApiTest {
         getUserAttribute.put("id", UUID.randomUUID().toString());
         String getUserBody= Utility.generatePayload(getUserAttribute);
         Response createUserResponse= RestClient.postRequestResponse(baseUrl,"/Read",bearerToken,getUserBody);
+    }
+
+    @Test(groups = {"loginuser"},dependsOnMethods = {"testCreateUserWithMandatoryFields"})
+    public void testLoginUserExistWithEmail()
+    {
+        log.info("------running login user test  for user which  exist-----------");
+        Map<String,String> loginUserAttribute= new java.util.HashMap<>();
+        loginUserAttribute.put("email",emailId);
+        loginUserAttribute.put("password",password);
+        String loginUserBody= Utility.generatePayload(loginUserAttribute);
+        Response loginUserResponse= RestClient.postRequestResponse(baseUrl,"/Login",bearerToken,loginUserBody);
+        sessionId="1";
+    }
+
+    @Test(groups = {"loginuser"},dependsOnMethods = {"testCreateUserWithMandatoryFields"})
+    public void testLoginUserExistWithWrongCredentials()
+    {
+        log.info("------running login user test  for user which  exist-----------");
+        Map<String,String> loginUserAttribute= new java.util.HashMap<>();
+        loginUserAttribute.put("email",emailId);
+        loginUserAttribute.put("password","000000000");
+        String loginUserBody= Utility.generatePayload(loginUserAttribute);
+        Response loginUserResponse= RestClient.postRequestResponse(baseUrl,"/Login",bearerToken,loginUserBody);
+    }
+
+    @Test(groups = {"logoutUser"},dependsOnGroups = {"loginuser"})
+    public void testLogoutUser()
+    {
+        log.info("------running login user test  for user which  exist-----------");
+        Map<String,String> logoutUserAttribute= new java.util.HashMap<>();
+        logoutUserAttribute.put("sessionId",sessionId);
+        String logoutUserBody= Utility.generatePayload(logoutUserAttribute);
+        Response logoutUserResponse= RestClient.postRequestResponse(baseUrl,"/Logout",bearerToken,logoutUserBody);
     }
 }
