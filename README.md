@@ -7,7 +7,7 @@ API Test task for unzer
 
 
 ## Prerequisites
-1)Install Java,Maven and Github
+1) Install Java,Maven and Github
 2) Generate bearer token using https://m3o.com/account/keys
 
 ## Running the tests
