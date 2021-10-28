@@ -14,7 +14,7 @@ API Test task for unzer
 1) command to run all test :- mvn clean test
 2) Run below command to run test under e2e package :- mvn clean test -U -Pe2etest
 3) Run below command to run test under componenttest package :- mvn clean test -U -Pcomponenttest
-4) Run below command with base url parameter and bearer token:-  mvn clean test -U -Pcomponenttest -DTEST_BASE_URL=${BASEURL} -DBEARER_TOKEN=${BEARER_TOKEN}
+4) Run below command with base url parameter and bearer token:-  mvn clean test -U -P{profile} -DTEST_BASE_URL=${BASEURL} -DBEARER_TOKEN=${BEARER_TOKEN}
 
 
 ## Reports
